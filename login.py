@@ -78,12 +78,15 @@ challenge = generate_challenge(verifier)
 state = auth0_url_encode(secrets.token_bytes(32))
 client_id = os.getenv('AUTH0_CLIENT_ID')
 tenant = os.getenv('AUTH0_TENANT')
+audience = os.getenv('AUTH0_AUDIENCE')
 redirect_uri = 'http://127.0.0.1:5000/callback'
+
+
 
 # We generate a nonce (state) that is used to protect against attackers invoking the callback
 base_url = 'https://%s.auth0.com/authorize?' % tenant
 url_parameters = {
-    'audience': 'https://gateley-empire-life.auth0.com/api/v2/',
+    'audience': audience,
     'scope': 'profile openid email read:clients create:clients read:client_keys',
     'response_type': 'code',
     'redirect_uri': redirect_uri,
@@ -121,16 +124,16 @@ body = {'grant_type': 'authorization_code',
         'client_id': client_id,
         'code_verifier': verifier,
         'code': code,
-        'audience': 'https://gateley-empire-life.auth0.com/api/v2/',
+        'audience': audience,
         'redirect_uri': redirect_uri}
 r = requests.post(url, headers=headers, data=json.dumps(body))
 data = r.json()
+print(data)
 
-# Use the token to list the clients
-url = 'https://%s.auth0.com/api/v2/clients' % tenant
+# Use the token to access 
+url = 'https://neurostore.org/api/users/'
 headers = {'Authorization': 'Bearer %s' % data['access_token']}
 r = requests.get(url, headers=headers)
 data = r.json()
 
-for client in data:
-    print("Client: " + client['name'])
+print(data)
