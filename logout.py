@@ -84,16 +84,10 @@ redirect_uri = 'http://127.0.0.1:5000/callback'
 
 
 # We generate a nonce (state) that is used to protect against attackers invoking the callback
-base_url = 'https://%s.auth0.com/authorize?' % tenant
+base_url = 'https://%s.auth0.com/logout?' % tenant
 url_parameters = {
-    'audience': audience,
-    'scope': 'profile openid email read:clients create:clients read:client_keys',
-    'response_type': 'code',
     'redirect_uri': redirect_uri,
     'client_id': client_id,
-    'code_challenge': challenge.replace('=', ''),
-    'code_challenge_method': 'S256',
-    'state': state
 }
 url = base_url + urllib.parse.urlencode(url_parameters)
 
@@ -116,24 +110,3 @@ if error_message:
     print("An error occurred:")
     print(error_message)
     exit(-1)
-
-# Exchange the code for a token
-url = 'https://%s.auth0.com/oauth/token' % tenant
-headers = {'Content-Type': 'application/json'}
-body = {'grant_type': 'authorization_code',
-        'client_id': client_id,
-        'code_verifier': verifier,
-        'code': code,
-        'audience': audience,
-        'redirect_uri': redirect_uri}
-r = requests.post(url, headers=headers, data=json.dumps(body))
-data = r.json()
-print(data)
-
-# Use the token to access 
-url = 'https://neurostore.xyz/api/studies/'
-headers = {'Authorization': 'Bearer %s' % data['access_token']}
-r = requests.get(url, headers=headers)
-data = r.json()
-
-print(data)
